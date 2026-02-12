@@ -39,6 +39,10 @@ app.post("/", async (context) => {
       return context.json({ message: "JINA_API_KEY is not configured" }, 500);
     }
 
+    if (!env.SERPER_API_KEY) {
+      return context.json({ message: "SERPER_API_KEY is not configured" }, 500);
+    }
+
     const queries = await retrieveQueriesFromDatabase(data);
     const searchResults = await performWebSearchWithQueries(queries);
     const pages = await fetchWebPageContents(searchResults);
@@ -71,17 +75,51 @@ async function retrieveQueriesFromDatabase(body: BodySchemaType) {
     },
   });
 }
+type SearchQuery = {
+  id: string;
+  text: string;
+  tickerId: string;
+};
 
-async function performWebSearchWithQueries(
-  queries: { id: string; text: string; tickerId: string }[],
-) {
-  // TODO: Implement actual web search
-  return queries.map((query) => ({
-    url: "https://www.example.com",
-    title: "Example Domain",
-    tickerId: query.tickerId,
-    searchQueryId: query.id,
-  }));
+export async function performWebSearchWithQueries(
+  queries: SearchQuery[],
+): Promise<WebPage[]> {
+  if (!queries.length) return [];
+
+  const results: WebPage[] = [];
+
+  for (const query of queries) {
+    try {
+      const response = await fetch("https://google.serper.dev/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": env.SERPER_API_KEY,
+        },
+        body: JSON.stringify({ q: query.text }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Serper request failed (${response.status}) for query: "${query.text}"`,
+        );
+      }
+      const data = await response.json();
+      const first = data?.organic?.[0];
+
+      results.push({
+        url: first?.link ?? "",
+        title: first?.title ?? "",
+        content: first?.snippet ?? "",
+        tickerId: query.tickerId,
+        searchQueryId: query.id,
+      });
+    } catch (err) {
+      console.error(`[serper] failed for query: ${query.text}`, err);
+    }
+  }
+
+  return results;
 }
 
 async function fetchWebPageContents(

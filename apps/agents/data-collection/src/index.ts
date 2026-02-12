@@ -86,40 +86,42 @@ export async function performWebSearchWithQueries(
 ): Promise<WebPage[]> {
   if (!queries.length) return [];
 
-  const results: WebPage[] = [];
+  const results = await Promise.all(
+    queries.map(async (query) => {
+      try {
+        const response = await fetch("https://google.serper.dev/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": env.SERPER_API_KEY,
+          },
+          body: JSON.stringify({ q: query.text }),
+        });
 
-  for (const query of queries) {
-    try {
-      const response = await fetch("https://google.serper.dev/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-KEY": env.SERPER_API_KEY,
-        },
-        body: JSON.stringify({ q: query.text }),
-      });
+        if (!response.ok) {
+          throw new Error(
+            `Serper request failed (${response.status}) for query: "${query.text}"`,
+          );
+        }
 
-      if (!response.ok) {
-        throw new Error(
-          `Serper request failed (${response.status}) for query: "${query.text}"`,
-        );
+        const data = await response.json();
+        const first = data?.organic?.[0];
+
+        return {
+          url: first?.link ?? "",
+          title: first?.title ?? "",
+          content: first?.snippet ?? "",
+          tickerId: query.tickerId,
+          searchQueryId: query.id,
+        };
+      } catch (err) {
+        console.error(`[serper] failed for query: ${query.text}`, err);
+        return null;
       }
-      const data = await response.json();
-      const first = data?.organic?.[0];
+    }),
+  );
 
-      results.push({
-        url: first?.link ?? "",
-        title: first?.title ?? "",
-        content: first?.snippet ?? "",
-        tickerId: query.tickerId,
-        searchQueryId: query.id,
-      });
-    } catch (err) {
-      console.error(`[serper] failed for query: ${query.text}`, err);
-    }
-  }
-
-  return results;
+  return results.filter(Boolean) as WebPage[];
 }
 
 async function fetchWebPageContents(

@@ -8,6 +8,7 @@ export const env = createEnv({
     DATABASE_URL: z.string().min(1),
     DATABASE_CERT_BASE64: z.string().optional(),
     AGENT_DATA_API_URL: z.string().optional(),
+    AGENT_API_KEY: z.string().optional(),
     TEMP_ADMIN_USERNAME: z.string().min(1),
     TEMP_ADMIN_PASSWORD: z.string().min(1),
   },

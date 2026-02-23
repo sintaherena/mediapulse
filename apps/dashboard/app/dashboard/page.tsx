@@ -16,41 +16,42 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-[#0F1115] text-white">
+      <header className="bg-gradient-to-r from-black via-[#111827] to-black border-b border-white/10 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <Image
-                src="/hyperjump-icon-only.png"
-                alt="Hyperjump Logo"
-                width={32}
-                height={32}
-                className="object-contain"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">MediaPulse</h1>
-                <p className="text-sm text-gray-500">Newsletter Dashboard</p>
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/5 rounded-xl border border-white/10">
+                <Image
+                  src="/hyperjump-icon-only.png"
+                  alt="Hyperjump Logo"
+                  width={28}
+                  height={28}
+                  className="object-contain"
+                />
+              </div>
+              <div className="leading-tight block">
+                <h1 className="text-lg font-semibold tracking-tight">
+                  MediaPulse
+                </h1>
+                <p className="text-xs text-white/50">AI Newsletter Dashboard</p>
               </div>
             </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <User className="h-4 w-4 text-blue-600" />
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
+                <div className="p-2 bg-white/10 rounded-lg">
+                  <User className="h-4 w-4 text-white/80" />
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
+                <div className="leading-tight">
+                  <p className="text-sm font-medium">{user?.name}</p>
+                  <p className="text-xs text-white/50">{user?.email}</p>
                 </div>
               </div>
+
               <Button
                 onClick={handleLogout}
-                variant="default"
                 size="sm"
-                className="flex items-center space-x-2"
+                className="bg-white text-black hover:bg-white/90 rounded-lg px-4"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -59,13 +60,15 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.name}! 👋
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="bg-gradient-to-br from-white/5 to-white/0 border border-white/10 rounded-2xl p-8 backdrop-blur-xl">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-3">
+            Welcome back, {user?.name}
           </h2>
-          <p className="text-gray-600">
-            Manage your AI newsletter and monitor content performance
+
+          <p className="text-white/60 max-w-xl">
+            Manage your AI-powered newsletter, track performance metrics, and
+            orchestrate content workflows from one command center.
           </p>
         </div>
       </main>

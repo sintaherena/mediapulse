@@ -83,7 +83,7 @@ function LoginFormFields({
           type="email"
           required
           autoComplete="email"
-          placeholder="m@example.com"
+          placeholder="you@example.com"
           className="h-11 rounded-xl border border-white text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[#1169EE] focus-visible:border-[#1169EE] focus-visible:ring-offset-0 transition-all duration-200"
         />
       </div>
@@ -99,7 +99,7 @@ function LoginFormFields({
           type="password"
           required
           autoComplete="current-password"
-          placeholder="******"
+          placeholder="Your super secret password"
           className="h-11 rounded-xl border border-white text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[#1169EE] focus-visible:border-[#1169EE] focus-visible:ring-offset-0 transition-all duration-200"
         />
       </div>

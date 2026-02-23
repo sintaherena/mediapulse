@@ -2,13 +2,66 @@
 
 import { useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useFormAction } from "./action/.generated/use-form-action";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { AuthCard, AuthLayout } from "@/components/auth-layout";
+import Image from "next/image";
+import { Card, CardContent } from "@workspace/ui/components/card";
+
+export function LoginLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen grid lg:grid-cols-2 bg-black">
+      <AuthLeftPanel />
+
+      <div className="relative flex items-center justify-center p-6 lg:p-12 bg-black">
+        <div className="relative w-full max-w-md space-y-10">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+export function AuthLeftPanel() {
+  return (
+    <div className="relative hidden lg:flex flex-col justify-between p-14 text-white overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#2A2A2E] via-[#1F1F23] to-[#141417]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.05),transparent_60%)]" />
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 text-xl font-semibold tracking-tight">
+          <div className="relative h-9 w-9">
+            <Image
+              src="/hyperjump-icon-only.png"
+              alt="MediaPulse Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <span className="text-white">MediaPulse</span>
+        </div>
+
+        <div className="mt-24 max-w-sm text-gray-300 leading-relaxed text-base">
+          Never miss what matters. Personalized insights delivered daily — only
+          the news that impacts your business.
+        </div>
+      </div>
+
+      <div className="relative z-10 text-sm text-gray-400">
+        Copyright © {new Date().getFullYear()} PT Artha Rajamas Mandiri. All
+        rights reserved.
+      </div>
+    </div>
+  );
+}
+
+export function LoginCard({ children }: { children: React.ReactNode }) {
+  return (
+    <Card className="rounded-3xl border border-neutral-800 bg-[#111111] shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
+      <CardContent className="p-10 text-white">{children}</CardContent>
+    </Card>
+  );
+}
 
 function LoginFormFields({
   errorMessage,
@@ -36,18 +89,9 @@ function LoginFormFields({
       </div>
 
       <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <Label htmlFor="body.password" className="text-white font-medium">
-            Password
-          </Label>
-
-          <Link
-            href="/forgot-password"
-            className="text-sm cursor-pointer text-[#1169EE] hover:text-[#0D54BF] transition-colors"
-          >
-            Forgot password?
-          </Link>
-        </div>
+        <Label htmlFor="body.password" className="text-white font-medium">
+          Password
+        </Label>
 
         <Input
           id="body.password"
@@ -101,7 +145,7 @@ export function LoginForm() {
     }
   }, [data, login, router]);
   return (
-    <AuthLayout>
+    <LoginLayout>
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight text-white">
           Sign in to your account
@@ -109,21 +153,11 @@ export function LoginForm() {
         <p className="text-sm text-gray-300">Continue where you left off.</p>
       </div>
 
-      <AuthCard>
+      <LoginCard>
         <FormWithAction className="space-y-7">
           <LoginFormFields errorMessage={errorMessage} pending={pending} />
         </FormWithAction>
-
-        <div className="text-center text-sm mt-5 text-gray-300">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            className="font-medium cursor-pointer text-[#1169EE] hover:text-[#0D54BF]"
-          >
-            Create one
-          </Link>
-        </div>
-      </AuthCard>
-    </AuthLayout>
+      </LoginCard>
+    </LoginLayout>
   );
 }

@@ -1,7 +1,9 @@
 import { verifyAPIKey } from "@workspace/agent-utils";
+import { logger } from "@workspace/logger";
 
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
+import { pinoLogger } from "hono-pino";
 import { z } from "zod";
 
 import { prisma } from "@workspace/database";
@@ -12,6 +14,7 @@ import { sendToAgentDataAPI } from "./send-to-agent-data-api.js";
 
 const app = new Hono();
 
+app.use(pinoLogger({ pino: logger }));
 app.use("*", bearerAuth({ verifyToken: async (token) => verifyAPIKey(token) }));
 
 const BodySchema = z.object({
@@ -19,6 +22,7 @@ const BodySchema = z.object({
 });
 
 app.post("/", async (context) => {
+  const logger = context.get("logger");
   try {
     const body = await context.req.json();
     const data = await BodySchema.parseAsync(body);
@@ -41,7 +45,7 @@ app.post("/", async (context) => {
 
     return context.json({ agentId: "delivery", agentVersion: "1.0.0" }, 200);
   } catch (error) {
-    console.error("Delivery agent error:", error);
+    logger.error({ err: error }, "Delivery agent error");
     return context.json({ message: "Internal Server Error" }, 500);
   }
 });

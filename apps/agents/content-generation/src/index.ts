@@ -1,15 +1,19 @@
 import { verifyAPIKey } from "@workspace/agent-utils";
 import { env } from "@workspace/env/agents-content-generation";
+import { logger } from "@workspace/logger";
 import { prisma } from "@workspace/database";
 import got from "got";
 
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
+import { pinoLogger } from "hono-pino";
 import OpenAI from "openai";
 import { z } from "zod";
 
 const app = new Hono();
 const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+
+app.use(pinoLogger({ pino: logger }));
 
 app.use("*", bearerAuth({ verifyToken: async (token) => verifyAPIKey(token) }));
 
@@ -33,6 +37,7 @@ interface GeneratedContent {
 }
 
 app.post("/", async (context) => {
+  const logger = context.get("logger");
   try {
     const body = await context.req.json();
     const data = await BodySchema.parseAsync(body);
@@ -56,7 +61,7 @@ app.post("/", async (context) => {
       200,
     );
   } catch (error) {
-    console.error("Content generation agent error:", error);
+    logger.error({ err: error }, "Content generation agent error");
     return context.json({ message: "Internal Server Error" }, 500);
   }
 });

@@ -1,13 +1,16 @@
 import { verifyAPIKey } from "@workspace/agent-utils";
 import { env } from "@workspace/env/agents-data-collection";
+import { logger } from "@workspace/logger";
 import { prisma } from "@workspace/database";
 import got from "got";
 
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
+import { pinoLogger } from "hono-pino";
 import { z } from "zod";
 
 const app = new Hono();
+app.use(pinoLogger({ pino: logger }));
 
 app.use("*", bearerAuth({ verifyToken: async (token) => verifyAPIKey(token) }));
 
@@ -32,6 +35,7 @@ interface WebPage {
 }
 
 app.post("/", async (context) => {
+  const logger = context.get("logger");
   try {
     const body = await context.req.json();
     const data = await BodySchema.parseAsync(body);
@@ -59,7 +63,7 @@ app.post("/", async (context) => {
       200,
     );
   } catch (error) {
-    console.error("Data collection agent error:", error);
+    logger.error({ err: error }, "Data collection agent error");
     return context.json({ message: "Internal Server Error" }, 500);
   }
 });
@@ -98,7 +102,9 @@ export async function performWebSearchWithQueries(
             "X-API-KEY": env.SERPER_API_KEY,
           },
         })
-        .json<{ organic?: Array<{ link?: string; title?: string; snippet?: string }> }>();
+        .json<{
+          organic?: Array<{ link?: string; title?: string; snippet?: string }>;
+        }>();
       const first = data?.organic?.[0];
 
       return {

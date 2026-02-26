@@ -1,5 +1,6 @@
 import { env } from "@workspace/env";
 import { prisma } from "@workspace/database";
+import { logger } from "@workspace/logger";
 import got from "got";
 
 import { NextResponse } from "next/server";
@@ -61,7 +62,10 @@ export async function POST(request: Request) {
       orderBy: { order: "asc" },
     });
 
-    console.log("PIPELINE STEPS", pipelineSteps);
+    logger.info(
+      { pipelineId: data.pipelineId, stepCount: pipelineSteps.length },
+      "PIPELINE STEPS",
+    );
 
     const agentIds = pipelineSteps.map((step) => step.agentId);
 
@@ -70,7 +74,7 @@ export async function POST(request: Request) {
     });
     const agentById = new Map(agents.map((a) => [a.agentId, a]));
 
-    console.log("AGENTS", agents);
+    logger.info({ agentIds }, "AGENTS");
 
     for (const step of pipelineSteps) {
       const agent = agentById.get(step.agentId);
@@ -89,7 +93,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in POST handler:", error);
+    logger.error({ err: error }, "Error in POST handler");
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },

@@ -24,7 +24,9 @@ jobs:
           cache: "pnpm"
 
       - name: Prepare env variables
-        run: cp env.example .env
+        run: |
+          cp env.example .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
         working-directory: packages/env
 
       - name: Bootstrap env symlinks
@@ -64,7 +66,9 @@ jobs:
           cache: "pnpm"
 
       - name: Prepare env variables
-        run: cp env.example .env
+        run: |
+          cp env.example .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
         working-directory: packages/env
 
       - name: Bootstrap env symlinks
@@ -104,7 +108,9 @@ jobs:
           cache: "pnpm"
 
       - name: Prepare env variables
-        run: cp env.example .env
+        run: |
+          cp env.example .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
         working-directory: packages/env
 
       - name: Bootstrap env symlinks
@@ -144,7 +150,9 @@ jobs:
           cache: "pnpm"
 
       - name: Prepare env variables
-        run: cp env.example .env
+        run: |
+          cp env.example .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
         working-directory: packages/env
 
       - name: Bootstrap env symlinks
@@ -180,7 +188,9 @@ jobs:
           cache: "pnpm"
 
       - name: Prepare env variables
-        run: cp env.example .env
+        run: |
+          cp env.example .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
         working-directory: packages/env
 
       - name: Bootstrap env symlinks

@@ -39,9 +39,11 @@ describe("agent-auth-api", () => {
   describe("POST /api/api-keys", () => {
     it("returns 401 without Basic Auth", async () => {
       const { default: app } = await import("./index.js");
-      const res = await app.request("http://localhost/api/api-keys", {
-        method: "POST",
-      });
+      const res = await app.fetch(
+        new Request("http://localhost/api/api-keys", {
+          method: "POST",
+        }),
+      );
       expect(res.status).toBe(401);
     });
 
@@ -54,14 +56,16 @@ describe("agent-auth-api", () => {
       });
 
       const { default: app } = await import("./index.js");
-      const res = await app.request("http://localhost/api/api-keys", {
-        method: "POST",
-        headers: { ...AUTH_HEADERS, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Test Key",
-          userId: USER_ID,
+      const res = await app.fetch(
+        new Request("http://localhost/api/api-keys", {
+          method: "POST",
+          headers: { ...AUTH_HEADERS, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: "Test Key",
+            userId: USER_ID,
+          }),
         }),
-      });
+      );
 
       const body = await res.json();
       expect(res.status).toBe(201);
@@ -79,9 +83,11 @@ describe("agent-auth-api", () => {
       ]);
 
       const { default: app } = await import("./index.js");
-      const res = await app.request("http://localhost/api/api-keys", {
-        headers: AUTH_HEADERS,
-      });
+      const res = await app.fetch(
+        new Request("http://localhost/api/api-keys", {
+          headers: AUTH_HEADERS,
+        }),
+      );
 
       const body = await res.json();
       expect(res.status).toBe(200);
@@ -100,11 +106,10 @@ describe("agent-auth-api", () => {
       });
 
       const { default: app } = await import("./index.js");
-      const res = await app.request(
-        `http://localhost/api/api-keys/${API_KEY_ID}`,
-        {
+      const res = await app.fetch(
+        new Request(`http://localhost/api/api-keys/${API_KEY_ID}`, {
           headers: AUTH_HEADERS,
-        },
+        }),
       );
 
       const body = await res.json();
@@ -117,11 +122,10 @@ describe("agent-auth-api", () => {
       (prisma.aPIKey.findUnique as any).mockResolvedValue(null);
 
       const { default: app } = await import("./index.js");
-      const res = await app.request(
-        `http://localhost/api/api-keys/${API_KEY_ID}`,
-        {
+      const res = await app.fetch(
+        new Request(`http://localhost/api/api-keys/${API_KEY_ID}`, {
           headers: AUTH_HEADERS,
-        },
+        }),
       );
 
       expect(res.status).toBe(404);
@@ -134,12 +138,11 @@ describe("agent-auth-api", () => {
       (prisma.aPIKey.delete as any).mockResolvedValue({ id: API_KEY_ID });
 
       const { default: app } = await import("./index.js");
-      const res = await app.request(
-        `http://localhost/api/api-keys/${API_KEY_ID}`,
-        {
+      const res = await app.fetch(
+        new Request(`http://localhost/api/api-keys/${API_KEY_ID}`, {
           method: "DELETE",
           headers: AUTH_HEADERS,
-        },
+        }),
       );
 
       const body = await res.json();

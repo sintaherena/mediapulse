@@ -13,6 +13,14 @@ vi.mock("@workspace/database", () => ({
   },
 }));
 
+vi.mock("@workspace/env", () => ({
+  env: {
+    DATABASE_URL: "postgresql://user:pass@localhost:5432/db",
+    TEMP_ADMIN_USERNAME: "admin",
+    TEMP_ADMIN_PASSWORD: "password",
+  },
+}));
+
 const getPrisma = async () => (await import("@workspace/database")).prisma;
 
 describe("agent-registry-api", () => {
@@ -27,9 +35,11 @@ describe("agent-registry-api", () => {
   describe("POST /api/agents/register", () => {
     it("returns 401 without Authorization header", async () => {
       const { default: app } = await import("./index.js");
-      const res = await app.request("http://localhost/api/agents/register", {
-        method: "POST",
-      });
+      const res = await app.fetch(
+        new Request("http://localhost/api/agents/register", {
+          method: "POST",
+        }),
+      );
       expect(res.status).toBe(401);
     });
 
@@ -47,18 +57,20 @@ describe("agent-registry-api", () => {
       });
 
       const { default: app } = await import("./index.js");
-      const res = await app.request("http://localhost/api/agents/register", {
-        method: "POST",
-        headers: { ...AUTH_HEADERS, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agentId: "test-agent",
-          agentVersion: "1.0.0",
-          endpoint: {
-            url: "http://example.com",
-            method: "POST",
-          },
+      const res = await app.fetch(
+        new Request("http://localhost/api/agents/register", {
+          method: "POST",
+          headers: { ...AUTH_HEADERS, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            agentId: "test-agent",
+            agentVersion: "1.0.0",
+            endpoint: {
+              url: "http://example.com",
+              method: "POST",
+            },
+          }),
         }),
-      });
+      );
 
       const body = await res.json();
       expect(res.status).toBe(200);

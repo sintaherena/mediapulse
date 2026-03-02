@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const TICKER_ID = "11111111-1111-4111-a111-111111111111";
 const AUTH_HEADERS = { Authorization: "Bearer test-token" };
 
-vi.mock("@workspace/agent-utils", () => ({
-    verifyAPIKey: vi.fn().mockResolvedValue(true),
+vi.mock("@workspace/agent-auth-client", () => ({
+    verifyTokenViaAuthApi: vi.fn().mockResolvedValue(true),
 }));
 
 vi.mock("@workspace/env/agents-data-collection", () => ({
@@ -12,6 +12,7 @@ vi.mock("@workspace/env/agents-data-collection", () => ({
         JINA_API_KEY: "jina-key",
         SERPER_API_KEY: "serper-key",
         AGENT_DATA_API_URL: "http://agent-data-api",
+        AGENT_AUTH_API_URL: "http://agent-auth-api",
     },
 }));
 
